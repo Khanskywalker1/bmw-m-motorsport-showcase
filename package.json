@@ -14,7 +14,8 @@
     "assets": "npm run assets:fetch && npm run assets:process",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "check:budget": "node scripts/check-budget.mjs"
   },
   "dependencies": {
     "gsap": "^3.12.5",

@@ -93,6 +93,38 @@ covered by a dedicated Playwright project; don't regress it.
 | Initial JS < 150 KB gzip | 129.7 KB (modern browsers; polyfills are `noModule`) |
 | Hero AVIF < 250 KB | Largest 245 KB — the encoder steps quality down per image to fit |
 
+## Deployment
+
+CI lives in `.github/workflows/deploy.yml`: every push and PR runs typecheck,
+content tests, Playwright across three projects, and the performance budgets;
+pushes to `main` then build and publish to GitHub Pages.
+
+**One manual step, once:** in the repo's *Settings → Pages*, set **Source** to
+**GitHub Actions**. Without it `actions/configure-pages` fails and nothing
+deploys.
+
+The base path is read from `actions/configure-pages`, not hardcoded — the repo
+can be renamed and the URLs follow. Locally, `NEXT_PUBLIC_BASE_PATH` does the
+same job:
+
+```bash
+NEXT_PUBLIC_BASE_PATH=/my-repo npm run build
+```
+
+Three things that quietly break a Pages deploy, all handled here:
+
+- **`public/.nojekyll`** — Jekyll ignores directories starting with `_`, which
+  would drop the entire `_next/` bundle.
+- **`trailingSlash: true`** — emits `/cars/foo/index.html`, so extensionless
+  URLs resolve without host rewrite rules.
+- **`withBasePath()`** in `lib/base-path.ts` — Next rewrites `<Link>` and its
+  own assets, but *not* plain strings like the `/media/...` paths in
+  `assets.generated.json`. Those go through this helper or they 404 on a
+  project page.
+
+`npm run assets` is deliberately not run in CI: `public/media/` is committed, so
+builds are reproducible offline and CI never hammers BMW's press CDN.
+
 ## Licence
 
 Code: do as you like. Imagery: © BMW AG, editorial use only — not covered by

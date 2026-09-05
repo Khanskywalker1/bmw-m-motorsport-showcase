@@ -1,0 +1,96 @@
+@import 'tailwindcss';
+
+@theme {
+  /* BMW M tricolour. Used as accent and in the signature stripe wipe. */
+  --color-m-blue: #0653a6;
+  --color-m-violet: #6f2c91;
+  --color-m-red: #e4002b;
+  --color-bmw-blue: #1c69d4;
+
+  /* Neutral ramp — near-black, warm enough not to read as pure #000. */
+  --color-ink-950: #070809;
+  --color-ink-900: #0b0c0e;
+  --color-ink-800: #131519;
+  --color-ink-700: #1d2026;
+  --color-ink-600: #2b2f37;
+  --color-ink-400: #6a7180;
+  --color-ink-300: #99a1ae;
+  --color-ink-200: #c7ccd4;
+  --color-ink-100: #e8eaee;
+
+  --font-display: var(--font-archivo), 'Arial Narrow', system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, -apple-system, sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+:root {
+  /* Overwritten per-car by <LiveryTheme>. Defaults are the M Hybrid V8's. */
+  --livery-primary: #1c69d4;
+  --livery-secondary: #6f2c91;
+  --livery-accent: #e4002b;
+  --livery-surface: #070809;
+  color-scheme: dark;
+}
+
+html {
+  background-color: var(--color-ink-950);
+  /* Lenis drives scrolling; native smooth-scroll would fight it. */
+  scroll-behavior: auto;
+}
+
+body {
+  background-color: var(--livery-surface);
+  color: var(--color-ink-100);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition: background-color 1.2s var(--ease-out-expo);
+}
+
+/* Lenis: it sets these itself, but declaring them avoids a first-frame jump. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+::selection {
+  background: var(--color-m-red);
+  color: white;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-bmw-blue);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+/* Specs and race numbers must not shift width as digits change. */
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/*
+ * Reduced motion is a hard requirement, not a nicety (spec section 8).
+ * Every primitive in lib/motion also checks this in JS so that GSAP never
+ * starts a timeline; this block is the belt-and-braces CSS half.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

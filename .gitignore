@@ -1,0 +1,14 @@
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# Raw press originals are re-fetchable via `npm run assets:fetch`.
+# Processed derivatives in public/media/ ARE committed (see spec section 6).
+assets/raw/
+
+test-results/
+playwright-report/
+.DS_Store
+.playwright-mcp/

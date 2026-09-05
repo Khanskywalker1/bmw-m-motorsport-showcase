@@ -1,12 +1,13 @@
+import { CARS } from '@/content'
 import { HomeHero } from '@/components/sections/home-hero'
-import { Roster } from '@/components/sections/roster'
+import { LadderSequence } from '@/components/sections/ladder-sequence'
 import { SeriesGrid } from '@/components/sections/series-grid'
 
 export default function HomePage() {
   return (
     <>
       <HomeHero />
-      <Roster />
+      <LadderSequence cars={CARS} />
       <SeriesGrid />
     </>
   )

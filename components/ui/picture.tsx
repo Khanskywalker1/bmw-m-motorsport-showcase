@@ -1,4 +1,5 @@
 import { getAsset } from '@/content'
+import { withBasePath } from '@/lib/base-path'
 
 type Props = {
   /** PressClub asset id, e.g. P90628256. */
@@ -33,15 +34,17 @@ export function Picture({
 }: Props) {
   const asset = getAsset(id)
 
+  // These are plain strings from assets.generated.json, so Next's basePath
+  // does not apply to them — prefix explicitly or they 404 on a subpath deploy.
   const srcset = (kind: 'avif' | 'webp') =>
-    WIDTHS.map((w) => `${asset[kind][String(w)]} ${w}w`).join(', ')
+    WIDTHS.map((w) => `${withBasePath(asset[kind][String(w)]!)} ${w}w`).join(', ')
 
   return (
     <picture className={className}>
       <source type="image/avif" srcSet={srcset('avif')} sizes={sizes} />
       <source type="image/webp" srcSet={srcset('webp')} sizes={sizes} />
       <img
-        src={asset.webp['1080']}
+        src={withBasePath(asset.webp['1080']!)}
         alt={alt ?? asset.alt}
         width={asset.width}
         height={asset.height}

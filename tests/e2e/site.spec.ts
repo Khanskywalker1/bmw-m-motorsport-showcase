@@ -18,8 +18,8 @@ const ROUTES = [
   '/colophon',
 ] as const
 
-/** The static export writes /foo.html; a real host serves it extensionless. */
-const url = (route: string) => (route === '/' ? '/' : `${route}.html`)
+/** trailingSlash: true means the export writes /foo/index.html. */
+const url = (route: string) => (route === '/' ? '/' : `${route}/`)
 
 async function gotoClean(page: Page, route: string) {
   const errors: string[] = []

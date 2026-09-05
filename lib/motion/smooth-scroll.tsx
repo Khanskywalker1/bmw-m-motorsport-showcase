@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { useReducedMotion } from './use-reduced-motion'
+import { setLenis } from './lenis-instance'
 
 /**
  * Lenis smooth scrolling, driven by GSAP's ticker so that Lenis and
@@ -39,12 +40,15 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       })
 
       lenis.on('scroll', ScrollTrigger.update)
+      // Published so programmatic scrolls go through Lenis instead of fighting it.
+      setLenis(lenis)
 
       const tick = (time: number) => lenis.raf(time * 1000)
       gsap.ticker.add(tick)
       gsap.ticker.lagSmoothing(0)
 
       cleanup = () => {
+        setLenis(null)
         gsap.ticker.remove(tick)
         gsap.ticker.lagSmoothing(500, 33)
         lenis.destroy()

@@ -19,8 +19,11 @@ export function SiteHeader() {
             M Motorsport
           </span>
         </Link>
-        <nav className="flex items-center gap-7 text-[12px] font-medium uppercase tracking-[0.14em] text-ink-300">
-          <Link href="/#roster" className="transition-colors hover:text-ink-100">
+        <nav className="flex items-center gap-5 text-[12px] sm:gap-7 font-medium uppercase tracking-[0.14em] text-ink-300">
+          <Link
+            href="/#roster"
+            className="hidden transition-colors hover:text-ink-100 sm:block"
+          >
             Roster
           </Link>
           <Link href="/#series" className="hidden transition-colors hover:text-ink-100 sm:block">

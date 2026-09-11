@@ -4,10 +4,14 @@ import { notFound } from 'next/navigation'
 import { CARS, CARS_BY_SLUG } from '@/content'
 import { LiveryTheme } from '@/lib/motion'
 import { CarHero } from '@/components/sections/car-hero'
+import { CarHeroDrift } from '@/components/sections/car-hero-drift'
 import { CarNarrative } from '@/components/sections/car-narrative'
 import { CarSpecs } from '@/components/sections/car-specs'
 import { CarMeta } from '@/components/sections/car-meta'
 import { CarGallery } from '@/components/sections/car-gallery'
+
+/** The one car with a scroll-driven 3D hero; every other car stays photographic. */
+const DRIFT_SLUG = 'm4-gt3-evo'
 
 export function generateStaticParams() {
   return CARS.map((car) => ({ slug: car.slug }))
@@ -38,7 +42,15 @@ export default async function CarPage({
 
   return (
     <LiveryTheme livery={car.livery}>
-      <CarHero car={car} />
+      {car.slug === DRIFT_SLUG ? (
+        // Only this car has a 3D asset. The photographic hero is passed through
+        // as the fallback for reduced motion, no WebGL, and pre-load.
+        <CarHeroDrift>
+          <CarHero car={car} />
+        </CarHeroDrift>
+      ) : (
+        <CarHero car={car} />
+      )}
       <CarNarrative car={car} />
       <CarSpecs car={car} />
       <CarMeta car={car} />

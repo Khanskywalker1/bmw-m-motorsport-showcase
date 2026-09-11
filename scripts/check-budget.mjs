@@ -14,6 +14,11 @@ import { gzipSync } from 'node:zlib'
 const OUT = join(process.cwd(), 'out')
 const JS_BUDGET = 150 * 1024
 const HERO_AVIF_BUDGET = 250 * 1024
+// The M4 GT3 page ships a 3D hero. These are lazy — nothing fetches them until
+// the canvas mounts — but "lazy" is not "free", so they are budgeted explicitly
+// rather than left invisible to CI.
+const MODEL_BUDGET = 8 * 1024 * 1024
+const DRACO_BUDGET = 300 * 1024
 
 let failed = false
 
@@ -50,6 +55,20 @@ async function checkPageJs(htmlPath, label) {
   report(total <= JS_BUDGET, label, total, JS_BUDGET)
 }
 
+async function checkModel() {
+  const glb = join(OUT, 'model', 'm4-gt3-exploded.glb')
+  const { size } = await stat(glb)
+  report(size <= MODEL_BUDGET, 'M4 GT3 GLB (lazy)', size, MODEL_BUDGET)
+
+  // Only the wasm path is counted: draco_decoder.js is the no-wasm fallback and
+  // no current browser fetches it.
+  let draco = 0
+  for (const f of ['draco_wasm_wrapper.js', 'draco_decoder.wasm']) {
+    draco += (await stat(join(OUT, 'draco', f))).size
+  }
+  report(draco <= DRACO_BUDGET, 'DRACO decoder (wasm path)', draco, DRACO_BUDGET)
+}
+
 async function checkImages() {
   const dir = join(OUT, 'media')
   const files = (await readdir(dir)).filter((f) => f.endsWith('-1920.avif'))
@@ -69,7 +88,14 @@ async function checkImages() {
 console.log('Performance budgets\n')
 await checkPageJs(join(OUT, 'index.html'), 'home page JS (gzipped)')
 await checkPageJs(join(OUT, 'cars', 'm-hybrid-v8', 'index.html'), 'car page JS (gzipped)')
+// The 3D hero lives here, so this page must be measured too — the generic car
+// page above is a different route output and would not catch a regression.
+await checkPageJs(
+  join(OUT, 'cars', 'm4-gt3-evo', 'index.html'),
+  'M4 GT3 page JS (gzipped)'
+)
 await checkImages()
+await checkModel()
 
 if (failed) {
   console.error('\nBudget exceeded — see FAIL rows above.')

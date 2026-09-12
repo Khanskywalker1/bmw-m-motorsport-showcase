@@ -12,3 +12,7 @@ test-results/
 playwright-report/
 .DS_Store
 .playwright-mcp/
+
+# Source footage is re-fetchable via `npm run footage:fetch`.
+# Processed frames in public/frames/ ARE committed.
+assets/footage/

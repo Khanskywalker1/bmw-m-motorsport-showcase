@@ -15,7 +15,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "check:budget": "node scripts/check-budget.mjs"
+    "check:budget": "node scripts/check-budget.mjs",
+    "footage:fetch": "tsx scripts/fetch-footage.ts",
+    "footage:process": "tsx scripts/process-footage.ts",
+    "footage": "npm run footage:fetch && npm run footage:process"
   },
   "dependencies": {
     "gsap": "^3.12.5",

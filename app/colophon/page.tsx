@@ -38,6 +38,22 @@ export default function ColophonPage() {
             and used editorially, with credit. This site is non-commercial and
             carries no advertising.
           </p>
+          <p>
+            The moving footage on the BMW M4 GT3 EVO page is BMW Group press
+            material from{' '}
+            <a
+              href="https://www.press.bmwgroup.com/global/tv-footage/detail/PF0008506/the-new-bmw-m4-gt3"
+              className="underline decoration-ink-600 underline-offset-4 transition-colors hover:text-white hover:decoration-white"
+              rel="noreferrer noopener"
+              target="_blank"
+            >
+              PressClub PF0008506
+            </a>
+            , &ldquo;BMW M4 GT3 Driving Scenes&rdquo;, &copy; BMW AG 2021. It
+            shows the 2021 development car in camouflage &mdash; the generation
+            before the EVO &mdash; and the page says so rather than implying
+            otherwise.
+          </p>
           <p className="text-ink-400">
             Technical specifications are shown only where they could be
             verified against a BMW Group source. Figures still awaiting

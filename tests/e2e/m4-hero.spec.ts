@@ -33,15 +33,35 @@ test.describe('M4 GT3 video hero', () => {
     await expect(page.locator('video')).toHaveCount(0)
   })
 
-  test('the hero video and its poster are served', async ({ request }) => {
+  test('every hero video variant and the poster are served', async ({ request }) => {
+    // All four, not just the pair a given browser happens to pick: a missing
+    // fallback only ever shows up on the browsers least likely to be tested.
     for (const path of [
-      '/video/m4-gt3-hero.webm',
-      '/video/m4-gt3-hero.mp4',
+      '/video/m4-gt3-hero-1080.webm',
+      '/video/m4-gt3-hero-1080.mp4',
+      '/video/m4-gt3-hero-720.webm',
+      '/video/m4-gt3-hero-720.mp4',
       '/video/m4-gt3-hero.jpg',
     ]) {
       const res = await request.get(path)
       expect(res.status(), `${path} is not served`).toBe(200)
     }
+  })
+
+  test('desktop gets the 1080p encode, narrow viewports get 720p', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto(M4)
+    const wide = page.locator('video')
+    await expect(wide).toHaveJSProperty('videoWidth', 1920)
+
+    await page.setViewportSize({ width: 420, height: 840 })
+    // A full reload is required: `media` on <source> is evaluated at load and
+    // is not re-checked on resize, so resizing alone would keep the 1080p file.
+    await page.goto(M4)
+    const narrow = page.locator('video')
+    await expect(narrow).toHaveJSProperty('videoWidth', 1280)
   })
 
   test('the video plays, and a poster covers it if autoplay is refused', async ({ page }) => {

@@ -23,11 +23,17 @@ const HERO_AVIF_BUDGET = 250 * 1024
 // for at all.
 const MODEL_BUDGET = 8 * 1024 * 1024
 const DRACO_BUDGET = 300 * 1024
-// The hero video IS fetched by anyone who opens the M4 GT3 page, so this is
-// the number that actually matters for a typical visit. Budgeted per codec
-// since a browser only ever downloads one of them.
-const VIDEO_BUDGET = 3 * 1024 * 1024
-const POSTER_BUDGET = 120 * 1024
+// The hero video IS fetched by anyone who opens the M4 GT3 page, so these are
+// the numbers that actually matter for a typical visit. Budgeted per FILE, not
+// pooled: a browser downloads exactly one of the four, and pooling would let a
+// regression in the file most people receive hide behind the others.
+const VIDEO_BUDGETS = [
+  ['m4-gt3-hero-1080.webm', 'hero video, 1080p AV1', 5 * 1024 * 1024],
+  ['m4-gt3-hero-1080.mp4', 'hero video, 1080p H.264', 7 * 1024 * 1024],
+  ['m4-gt3-hero-720.webm', 'hero video, 720p AV1', 2.5 * 1024 * 1024],
+  ['m4-gt3-hero-720.mp4', 'hero video, 720p H.264', 3 * 1024 * 1024],
+]
+const POSTER_BUDGET = 140 * 1024
 
 let failed = false
 
@@ -65,12 +71,9 @@ async function checkPageJs(htmlPath, label) {
 }
 
 async function checkVideo() {
-  for (const [file, label] of [
-    ['m4-gt3-hero.webm', 'hero video, AV1'],
-    ['m4-gt3-hero.mp4', 'hero video, H.264'],
-  ]) {
+  for (const [file, label, budget] of VIDEO_BUDGETS) {
     const { size } = await stat(join(OUT, 'video', file))
-    report(size <= VIDEO_BUDGET, label, size, VIDEO_BUDGET)
+    report(size <= budget, label, size, budget)
   }
   // The poster is the one piece every visitor pays for regardless of whether
   // autoplay is permitted, so it is budgeted separately and tightly.

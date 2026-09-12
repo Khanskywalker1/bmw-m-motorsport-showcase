@@ -12,8 +12,12 @@ import { useReducedMotion } from '@/lib/motion/use-reduced-motion'
  * as rough no matter how the frames are encoded — scroll events are coarse
  * and irregular, so the playhead stutters in a way continuous playback never
  * does. Letting the video play at its own rate and using scroll only to
- * reveal copy is both smoother and lighter (1.6 MB AV1 / 2.5 MB H.264 against
- * 2.4 MB of frames).
+ * reveal copy is both smoother and lighter than scrubbing 120 stills.
+ *
+ * Encoded from the ProRes 422 HQ master (177 Mbps) rather than PressClub's
+ * 2.5 Mbps preview, at native 1080p for desktop: an earlier pass encoded 720p
+ * and let the full-bleed hero upscale it ~1.9x on a 2x display, which is why
+ * it looked soft.
  *
  * `children` is the ordinary photographic <CarHero>, and it is the real hero
  * for reduced motion and for anyone whose browser refuses autoplay.
@@ -138,9 +142,27 @@ export function CarHeroVideo({ children }: { children: React.ReactNode }) {
             playing ? 'opacity-100' : 'pointer-events-none opacity-0'
           }`}
         >
-          {/* AV1 first: roughly a third smaller, and browsers pick by order. */}
-          <source src={withBasePath('/video/m4-gt3-hero.webm')} type="video/webm; codecs=av01.0.05M.08" />
-          <source src={withBasePath('/video/m4-gt3-hero.mp4')} type="video/mp4" />
+          {/* Order matters twice over: the browser takes the first entry whose
+              media query matches AND whose codec it supports. So AV1 leads on
+              each tier (most engines take it; H.264 covers Safari on Intel and
+              older browsers), and the desktop tier is listed first.
+
+              `media` on <source> is evaluated at load only — it is not
+              re-checked on resize. Fine for a hero; worth knowing. */}
+          <source
+            media="(min-width: 821px)"
+            src={withBasePath('/video/m4-gt3-hero-1080.webm')}
+            type="video/webm; codecs=av01.0.05M.08"
+          />
+          <source
+            media="(min-width: 821px)"
+            src={withBasePath('/video/m4-gt3-hero-1080.mp4')}
+            type="video/mp4"
+          />
+          {/* Phones get 720p: the 1080p pair is ~2x the bytes for a screen that
+              cannot resolve the difference. */}
+          <source src={withBasePath('/video/m4-gt3-hero-720.webm')} type="video/webm; codecs=av01.0.05M.08" />
+          <source src={withBasePath('/video/m4-gt3-hero-720.mp4')} type="video/mp4" />
         </video>
 
         <div aria-hidden className="pointer-events-none absolute inset-0">

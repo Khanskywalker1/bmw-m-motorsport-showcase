@@ -14,15 +14,10 @@ import { gzipSync } from 'node:zlib'
 const OUT = join(process.cwd(), 'out')
 const JS_BUDGET = 150 * 1024
 const HERO_AVIF_BUDGET = 250 * 1024
-// The M4 GT3 page has two heavy, non-initial payloads. Neither is fetched on
-// page load, but "lazy" is not "free" — budget both explicitly rather than
-// leaving them invisible to CI.
+// The M4 GT3 page ships a hero video. It is not part of the initial JS, but
+// "not initial" is not "free" — budget it explicitly rather than leaving it
+// invisible to CI.
 //
-// The model is now strictly opt-in: it loads only when the reader presses the
-// button on the diagram, so it is the one thing here most visitors never pay
-// for at all.
-const MODEL_BUDGET = 8 * 1024 * 1024
-const DRACO_BUDGET = 300 * 1024
 // The hero video IS fetched by anyone who opens the M4 GT3 page, so these are
 // the numbers that actually matter for a typical visit. Budgeted per FILE, not
 // pooled: a browser downloads exactly one of the four, and pooling would let a
@@ -81,19 +76,6 @@ async function checkVideo() {
   report(size <= POSTER_BUDGET, 'hero poster (JPEG fallback)', size, POSTER_BUDGET)
 }
 
-async function checkModel() {
-  const glb = join(OUT, 'model', 'm4-gt3-exploded.glb')
-  const { size } = await stat(glb)
-  report(size <= MODEL_BUDGET, 'M4 GT3 GLB (opt-in)', size, MODEL_BUDGET)
-
-  // Only the wasm path is counted: draco_decoder.js is the no-wasm fallback and
-  // no current browser fetches it.
-  let draco = 0
-  for (const f of ['draco_wasm_wrapper.js', 'draco_decoder.wasm']) {
-    draco += (await stat(join(OUT, 'draco', f))).size
-  }
-  report(draco <= DRACO_BUDGET, 'DRACO decoder (wasm path)', draco, DRACO_BUDGET)
-}
 
 async function checkImages() {
   const dir = join(OUT, 'media')
@@ -122,7 +104,6 @@ await checkPageJs(
 )
 await checkImages()
 await checkVideo()
-await checkModel()
 
 if (failed) {
   console.error('\nBudget exceeded — see FAIL rows above.')

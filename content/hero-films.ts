@@ -54,12 +54,19 @@ export const FILMS: Record<string, Film> = {
   },
 
   /**
-   * Footage is the reveal/test car in camouflage, carrying "YOU DREAMED IT.
-   * WE BUILT IT." on its flank — not the race car, which ran a different
-   * design at the Nürburgring. Every claim below is already verified in
-   * content/cars/m3-touring-24h.ts: the 2025 April Fools' origin, and fifth
-   * overall with the SPX class win in 2026. The circuit in the clip is not
-   * identified and is not named.
+   * Footage is the reveal/test car in camouflage — not the race car, which ran
+   * a different design at the Nürburgring.
+   *
+   * The camouflage in this clip is printed with fan replies to the 2025 April
+   * Fools' post, in speech bubbles. Read off the ProRes master at full
+   * resolution: "Why can't this be real??!", "I want this more than anything
+   * right now", "This thing is actually quite awesome", "WOW... Love it!".
+   * Beat 2 quotes one of those verbatim, so it describes what is on screen
+   * rather than narrating around it.
+   *
+   * The rest is already verified in content/cars/m3-touring-24h.ts: the April
+   * Fools' origin, fifth overall, the SPX class win. The circuit in the clip is
+   * not identified and is not named.
    */
   'm3-touring-24h': {
     prefix: 'm3-touring-hero',
@@ -72,7 +79,7 @@ export const FILMS: Record<string, Film> = {
       {
         at: [0.36, 0.66],
         kicker: 'Testing in camouflage',
-        line: 'The fans refused to let it go — so it got built. The answer is written on the car: you dreamed it, we built it.',
+        line: 'The replies became the paintwork. “Why can’t this be real??!”',
       },
       {
         at: [0.68, 0.98],

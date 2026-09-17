@@ -73,8 +73,10 @@ export const FOOTAGE: FootageSource[] = [
       'on track in daylight. Verified frame-by-frame at 0.5s intervals — the shot ' +
       'runs to ~254.2 before cutting to a wide, so 242.0 +11.5 leaves a 0.7s margin.',
     subject:
-      'The M3 Touring 24H in its reveal camouflage, carrying "YOU DREAMED IT. WE ' +
-      'BUILT IT." The circuit is not identified in the footage and must not be named.',
+      'The M3 Touring 24H in its reveal camouflage during testing — not the livery ' +
+      'it raced. The camo is printed with fan replies to the 2025 April Fools\' post ' +
+      '("Why can\'t this be real??!"), which is what the hero copy quotes. The ' +
+      'circuit is not identified in the footage and must not be named.',
   },
 ]
 

@@ -78,6 +78,48 @@ export const FOOTAGE: FootageSource[] = [
       '("Why can\'t this be real??!"), which is what the hero copy quotes. The ' +
       'circuit is not identified in the footage and must not be named.',
   },
+  {
+    slug: 'm-hybrid-v8',
+    prefix: 'm-hybrid-v8-hero',
+    pf: 'PF0009833',
+    title: 'FIA WEC Bapco Energies 8 Hours of Bahrain',
+    date: '2024-11-08',
+    // Scene #8 of 23, "Rookie Test. Hypercar.". Chosen over the race scenes
+    // because a test session is the one place a WEC package shows the BMW
+    // without a field of other manufacturers around it.
+    sceneId: 19368,
+    sceneFileId: 21181,
+    segment: { start: 442.0, duration: 11.5 },
+    note:
+      'A pit stop inside the 16.96s unbroken shot at 440.12 -> 457.08, of 57 ' +
+      'detected cuts. The car sits large in frame with mechanics working it, no ' +
+      'other manufacturer in shot. Static where the other heroes move, but a pit ' +
+      'stop is the register an endurance prototype actually lives in.',
+    subject:
+      'The BMW M Hybrid V8 in the pit box at Bahrain, Nov 2024. A works LMDh ' +
+      'prototype — no EVO generation exists, so no generational caveat applies. ' +
+      'The copy must not imply this is Le Mans; it is Bahrain.',
+  },
+  {
+    slug: 'm4-gt4-evo',
+    prefix: 'm4-gt4-hero',
+    pf: 'PF0009843',
+    title: 'GT4 European Series Jeddah',
+    date: '2024-12-04',
+    sceneId: 19441,
+    sceneFileId: 21254,
+    segment: { start: 169.5, duration: 11.0 },
+    note:
+      'Inside the 17.32s unbroken shot at 165.24 -> 182.56, of 52 detected cuts. ' +
+      'Night street circuit under floodlights: the car sits three-quarter front in ' +
+      'BMW M colours, the driver walks up and gets in, then it pulls away. The one ' +
+      'candidate with a human beat in it rather than just a car.',
+    subject:
+      'A BMW M4 GT4 on the grid at Jeddah, GT4 European Series, Dec 2024 — the ' +
+      '2024 season, so the copy must NOT claim this is the EVO specifically. Same ' +
+      'caveat as the M4 GT3 hero. Jeddah IS named on screen ("JEDDAH CORNICHE ' +
+      'CIRCUIT" on the podium backdrop), so naming it here is verified, not guessed.',
+  },
 ]
 
 export const bySlug = (slug: string) => FOOTAGE.find((f) => f.slug === slug)

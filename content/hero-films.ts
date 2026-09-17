@@ -88,6 +88,77 @@ export const FILMS: Record<string, Film> = {
       },
     ],
   },
+
+  /**
+   * Footage is a pit stop at the 8 Hours of Bahrain, Nov 2024 — the "Rookie
+   * Test. Hypercar." scene, which is the one place in a WEC package the BMW
+   * appears without a field of rivals around it.
+   *
+   * There is no EVO generation of this car, so unlike the M4 GT3 and M4 GT4
+   * heroes no generational caveat is needed. What the copy must not do is
+   * imply Le Mans: the 1999 win is named as history, and the footage is
+   * explicitly labelled Bahrain, because it is Bahrain.
+   *
+   * Claims verified in content/cars/m-hybrid-v8.ts: the 1999 V12 LMR outright
+   * win, the quarter-century absence from the top class, and 2026 being the
+   * first season contesting WEC Hypercar and IMSA GTP simultaneously.
+   */
+  'm-hybrid-v8': {
+    prefix: 'm-hybrid-v8-hero',
+    beats: [
+      {
+        at: [0.04, 0.34],
+        kicker: 'Bahrain · 2024',
+        line: 'Endurance racing is won in the pit lane as much as on the track.',
+      },
+      {
+        at: [0.36, 0.66],
+        kicker: 'The long absence',
+        line: 'A BMW last won Le Mans outright in 1999. Then it left the top class for twenty-five years.',
+      },
+      {
+        at: [0.68, 0.98],
+        kicker: 'BMW M Hybrid V8 · 2026',
+        line: 'This is the car built to end that — now racing WEC and IMSA in the same season.',
+      },
+    ],
+  },
+
+  /**
+   * Footage is the grid at the Jeddah Corniche Circuit under floodlights, GT4
+   * European Series, Dec 2024: the #17 car in BMW M colours, its driver walking
+   * up and getting in, then pulling away.
+   *
+   * ACCURACY: this is the 2024 season, so the copy must NOT present it as the
+   * EVO — same caveat as the M4 GT3 hero, and beat 1 dates the footage so a
+   * reader is not left to assume. Jeddah IS named on screen (the podium
+   * backdrop reads "JEDDAH CORNICHE CIRCUIT"), so naming the circuit here is
+   * verified rather than inferred — the opposite of the M4 GT3 clip, where the
+   * track is deliberately left unnamed.
+   *
+   * The mixed-grid framing and the twelve-series/four-continents figure are
+   * both carried as verified in content/cars/m4-gt4-evo.ts.
+   */
+  'm4-gt4-evo': {
+    prefix: 'm4-gt4-hero',
+    beats: [
+      {
+        at: [0.04, 0.34],
+        kicker: 'Jeddah · December 2024',
+        line: 'The class where amateurs and professionals line up on the same grid.',
+      },
+      {
+        at: [0.36, 0.66],
+        kicker: 'Where careers start',
+        line: 'Which is why GT4 races produce results nobody forecast.',
+      },
+      {
+        at: [0.68, 0.98],
+        kicker: 'BMW M4 GT4 EVO · 2026',
+        line: 'Twelve championships. Four continents. The rung most racing careers actually begin on.',
+      },
+    ],
+  },
 }
 
 export const FILM_SLUGS = Object.keys(FILMS)

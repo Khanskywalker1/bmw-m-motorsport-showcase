@@ -31,6 +31,14 @@ const VIDEO_BUDGETS = [
   ['m3-touring-hero-1080.mp4', 'M3 Touring video, 1080p H.264', 7 * 1024 * 1024],
   ['m3-touring-hero-720.webm', 'M3 Touring video, 720p AV1', 2.5 * 1024 * 1024],
   ['m3-touring-hero-720.mp4', 'M3 Touring video, 720p H.264', 3 * 1024 * 1024],
+  ['m-hybrid-v8-hero-1080.webm', 'M Hybrid V8 video, 1080p AV1', 5 * 1024 * 1024],
+  ['m-hybrid-v8-hero-1080.mp4', 'M Hybrid V8 video, 1080p H.264', 7 * 1024 * 1024],
+  ['m-hybrid-v8-hero-720.webm', 'M Hybrid V8 video, 720p AV1', 2.5 * 1024 * 1024],
+  ['m-hybrid-v8-hero-720.mp4', 'M Hybrid V8 video, 720p H.264', 3 * 1024 * 1024],
+  ['m4-gt4-hero-1080.webm', 'M4 GT4 video, 1080p AV1', 5 * 1024 * 1024],
+  ['m4-gt4-hero-1080.mp4', 'M4 GT4 video, 1080p H.264', 7 * 1024 * 1024],
+  ['m4-gt4-hero-720.webm', 'M4 GT4 video, 720p AV1', 2.5 * 1024 * 1024],
+  ['m4-gt4-hero-720.mp4', 'M4 GT4 video, 720p H.264', 3 * 1024 * 1024],
 ]
 const POSTER_BUDGET = 140 * 1024
 
@@ -79,6 +87,8 @@ async function checkVideo() {
   for (const [prefix, label] of [
     ['m4-gt3-hero', 'M4 GT3 poster (JPEG fallback)'],
     ['m3-touring-hero', 'M3 Touring poster (JPEG fallback)'],
+    ['m-hybrid-v8-hero', 'M Hybrid V8 poster (JPEG fallback)'],
+    ['m4-gt4-hero', 'M4 GT4 poster (JPEG fallback)'],
   ]) {
     const { size } = await stat(join(OUT, 'video', `${prefix}.jpg`))
     report(size <= POSTER_BUDGET, label, size, POSTER_BUDGET)

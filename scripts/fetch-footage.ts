@@ -7,10 +7,15 @@
  *
  * Which films, which seconds, and why: scripts/footage-sources.ts.
  *
- * The masters are ProRes 422 HQ and run to several GB each (the M3 Touring
- * scene alone is 6.36 GB). The CDN honours HTTP range requests and ProRes is
- * intra-frame, so ffmpeg seeks straight to the segment and copies out only
- * what is needed. That matters: the previews are only ~2.7 Mbps at 1080p, and
+ * The masters run to several GB each (the M3 Touring scene alone is 6.36 GB)
+ * and the CDN honours HTTP range requests, so ffmpeg seeks straight to the
+ * segment and copies out only what is needed.
+ *
+ * Format varies and the listing panels lie about it: the M4 GT3 and M3
+ * Touring masters really are ProRes 422 HQ (~171-177 Mbps), but the Bahrain
+ * and Jeddah masters are 25 Mbps H.264 despite their panels saying
+ * "Quicktime AppleProRes". Both are still far better than the ~2.7 Mbps
+ * preview, which is the point. That matters: the previews are only ~2.7 Mbps at 1080p, and
  * encoding a hero from one bakes in compression damage that no amount of
  * output bitrate recovers.
  */
@@ -35,6 +40,22 @@ function run(cmd: string, args: string[]): Promise<void> {
     p.on('close', (c) =>
       c === 0 ? resolve() : reject(new Error(`${cmd} exited ${c}\n${err.slice(-2000)}`))
     )
+  })
+}
+
+/** Duration in seconds, or null if ffprobe cannot read the file at all. */
+async function probeDuration(path: string): Promise<number | null> {
+  return new Promise((resolve) => {
+    const p = spawn('ffprobe', [
+      '-v', 'error', '-show_entries', 'format=duration',
+      '-of', 'default=noprint_wrappers=1:nokey=1', path,
+    ])
+    let out = ''
+    p.stdout.on('data', (d) => (out += d.toString()))
+    p.on('close', (c) => {
+      const n = Number(out.trim())
+      resolve(c === 0 && Number.isFinite(n) && n > 0 ? n : null)
+    })
   })
 }
 
@@ -72,7 +93,7 @@ async function fetchMasterSegment(f: FootageSource) {
   }
   const { start, duration } = f.segment
   console.log(
-    `fetch    ${segmentFile(f)} — ProRes master, ${start}s +${duration}s ` +
+    `fetch    ${segmentFile(f)} — broadcast master, ${start}s +${duration}s ` +
       `(range request into a multi-GB file; takes several minutes)`
   )
   // -c copy, not a re-encode: the intermediate must stay pristine so every
@@ -87,15 +108,21 @@ async function fetchMasterSegment(f: FootageSource) {
   ])
 
   // A rate-limited or truncated range fetch yields a short/plain-wrong file
-  // that would otherwise only surface as a mysteriously brief hero. ProRes 422
-  // HQ at 1080p25 runs ~20 MB/s, so anything under ~10 MB/s of segment is broken.
+  // that would otherwise only surface as a mysteriously brief hero.
+  //
+  // Validate by PROBING, not by guessing bytes. An earlier version required
+  // ~10 MB/s on the assumption every master is ProRes; the Bahrain and Jeddah
+  // masters are 25 Mbps H.264 (despite their listing panels saying
+  // "Quicktime AppleProRes"), so a byte floor rejected perfectly good files.
+  // Duration plus a readable video stream catches truncation whatever the codec.
   const { size } = await stat(out)
-  const floor = duration * 10 * 1024 * 1024
-  if (size < floor) {
+  const probed = await probeDuration(out)
+  const shortfall = probed === null || probed < duration * 0.9
+  if (shortfall || size < 1_000_000) {
     await rm(out, { force: true })
     throw new Error(
-      `${segmentFile(f)} came back only ${(size / 1048576).toFixed(0)} MB — ` +
-        `expected at least ${(floor / 1048576).toFixed(0)} MB for ${duration}s of ProRes`
+      `${segmentFile(f)} is truncated — got ${probed === null ? 'an unreadable file' : probed.toFixed(2) + 's'} ` +
+        `(${(size / 1048576).toFixed(0)} MB) for a ${duration}s segment. Re-run to resume.`
     )
   }
   console.log(`         ${(size / 1048576).toFixed(1)} MB`)

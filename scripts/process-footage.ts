@@ -98,6 +98,31 @@ async function probe(path: string) {
   })
 }
 
+/**
+ * Encode down to a byte budget, stepping quality down until it fits. Returns
+ * at the first quality that fits, so easy frames keep the best setting and only
+ * busy ones pay. Floors at q40 rather than looping forever — below that the
+ * poster would look worse than no poster.
+ */
+async function encodeToBudget(
+  src: string,
+  out: string,
+  fmt: 'avif' | 'jpeg',
+  startQuality: number,
+  budget: number
+) {
+  for (let q = startQuality; q >= 40; q -= 6) {
+    const img = sharp(src)
+    await (fmt === 'avif' ? img.avif({ quality: q }) : img.jpeg({ quality: q, mozjpeg: true }))
+      .toFile(out)
+    const { size } = await stat(out)
+    if (size <= budget) return { q, size }
+  }
+  const { size } = await stat(out)
+  console.warn(`  warn: ${out.split('/').pop()} is ${(size / 1024).toFixed(0)} KB at the q40 floor`)
+  return { q: 40, size }
+}
+
 async function processOne(f: FootageSource) {
   const src = join(SRC_DIR, segmentFile(f))
   try {
@@ -128,8 +153,11 @@ async function processOne(f: FootageSource) {
   // (iOS low power, data saver, policy), so it should not be the soft one.
   const tmp = join(OUT, `_poster_${f.prefix}.png`)
   await run('ffmpeg', ['-v', 'error', '-i', src, '-frames:v', '1', '-vf', 'scale=1920:-2', '-y', tmp])
-  await sharp(tmp).avif({ quality: 58 }).toFile(join(OUT, `${f.prefix}.avif`))
-  await sharp(tmp).jpeg({ quality: 74, mozjpeg: true }).toFile(join(OUT, `${f.prefix}.jpg`))
+  // Quality is targeted at a size, not fixed. A fixed q74 is fine for a clean
+  // daylight shot but blew past the 140 KB poster budget on the Jeddah night
+  // frame, which is full of floodlights, crowd and signage detail.
+  await encodeToBudget(tmp, join(OUT, `${f.prefix}.avif`), 'avif', 58, 120 * 1024)
+  await encodeToBudget(tmp, join(OUT, `${f.prefix}.jpg`), 'jpeg', 74, 130 * 1024)
   await rm(tmp, { force: true })
   const avif = (await stat(join(OUT, `${f.prefix}.avif`))).size
   const jpg = (await stat(join(OUT, `${f.prefix}.jpg`))).size

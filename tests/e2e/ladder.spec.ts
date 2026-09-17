@@ -102,8 +102,13 @@ test.describe('ladder under reduced motion', () => {
     await page.goto('/')
     const section = page.locator('#roster')
     // Not a tall scrubbed section: it collapses to normal document flow.
-    const styled = await section.evaluate((el) => el.getAttribute('style'))
-    expect(styled ?? '').not.toContain('svh')
+    //
+    // This must be a retrying assertion, not a one-shot evaluate(). The server
+    // renders the tall `height:500svh` sequence and the reduced-motion client
+    // collapses it only after hydration, so reading the attribute once right
+    // after goto() races that swap — it failed intermittently on the mobile
+    // project, whose slower emulated device loses the race more often.
+    await expect(section).not.toHaveAttribute('style', /svh/)
 
     for (const car of CARS) {
       await expect(

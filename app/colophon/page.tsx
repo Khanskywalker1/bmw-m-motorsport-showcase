@@ -70,6 +70,41 @@ export default function ColophonPage() {
             livery it raced at the N&uuml;rburgring. The circuit is not
             identified in the footage and is not named here.
           </p>
+          <p>
+            The moving footage on the BMW M Hybrid V8 page is BMW Group press
+            material from{' '}
+            <a
+              href="https://www.press.bmwgroup.com/global/tv-footage/detail/PF0009833/fia-wec-bapco-energies-8-hours-of-bahrain-press-footage"
+              className="underline decoration-ink-600 underline-offset-4 transition-colors hover:text-white hover:decoration-white"
+              rel="noreferrer noopener"
+              target="_blank"
+            >
+              PressClub PF0009833
+            </a>
+            , &copy; BMW AG 2024 &mdash; a pit stop during the 8 Hours of
+            Bahrain, not Le Mans.
+          </p>
+          <p>
+            The moving footage on the BMW M4 GT4 EVO page is BMW Group press
+            material from{' '}
+            <a
+              href="https://www.press.bmwgroup.com/global/tv-footage/detail/PF0009843/gt4-european-series-jeddah-press-footage"
+              className="underline decoration-ink-600 underline-offset-4 transition-colors hover:text-white hover:decoration-white"
+              rel="noreferrer noopener"
+              target="_blank"
+            >
+              PressClub PF0009843
+            </a>
+            , &copy; BMW AG 2024. It was shot at the GT4 European Series round
+            in Jeddah in December 2024, so it shows an M4 GT4 of that season
+            rather than the EVO the page describes, and the page dates it
+            accordingly.
+          </p>
+          <p className="text-ink-400">
+            The BMW M2 Racing page carries no film: BMW Group PressClub
+            publishes no TV footage of the car. The only M2 entry in the
+            archive is the road car, which would be the wrong vehicle.
+          </p>
           <p className="text-ink-400">
             Technical specifications are shown only where they could be
             verified against a BMW Group source. Figures still awaiting

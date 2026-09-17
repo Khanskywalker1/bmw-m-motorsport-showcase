@@ -54,6 +54,22 @@ export default function ColophonPage() {
             before the EVO &mdash; and the page says so rather than implying
             otherwise.
           </p>
+          <p>
+            The moving footage on the BMW M3 Touring 24H page is BMW Group press
+            material from{' '}
+            <a
+              href="https://www.press.bmwgroup.com/global/tv-footage/detail/PF0010127/the-new-bmw-m3-touring-24-h"
+              className="underline decoration-ink-600 underline-offset-4 transition-colors hover:text-white hover:decoration-white"
+              rel="noreferrer noopener"
+              target="_blank"
+            >
+              PressClub PF0010127
+            </a>
+            , &ldquo;The new BMW M3 Touring 24 H&rdquo;, &copy; BMW AG 2026. It
+            shows the car in its reveal camouflage during testing, not the
+            livery it raced at the N&uuml;rburgring. The circuit is not
+            identified in the footage and is not named here.
+          </p>
           <p className="text-ink-400">
             Technical specifications are shown only where they could be
             verified against a BMW Group source. Figures still awaiting

@@ -23,10 +23,14 @@ const HERO_AVIF_BUDGET = 250 * 1024
 // pooled: a browser downloads exactly one of the four, and pooling would let a
 // regression in the file most people receive hide behind the others.
 const VIDEO_BUDGETS = [
-  ['m4-gt3-hero-1080.webm', 'hero video, 1080p AV1', 5 * 1024 * 1024],
-  ['m4-gt3-hero-1080.mp4', 'hero video, 1080p H.264', 7 * 1024 * 1024],
-  ['m4-gt3-hero-720.webm', 'hero video, 720p AV1', 2.5 * 1024 * 1024],
-  ['m4-gt3-hero-720.mp4', 'hero video, 720p H.264', 3 * 1024 * 1024],
+  ['m4-gt3-hero-1080.webm', 'M4 GT3 video, 1080p AV1', 5 * 1024 * 1024],
+  ['m4-gt3-hero-1080.mp4', 'M4 GT3 video, 1080p H.264', 7 * 1024 * 1024],
+  ['m4-gt3-hero-720.webm', 'M4 GT3 video, 720p AV1', 2.5 * 1024 * 1024],
+  ['m4-gt3-hero-720.mp4', 'M4 GT3 video, 720p H.264', 3 * 1024 * 1024],
+  ['m3-touring-hero-1080.webm', 'M3 Touring video, 1080p AV1', 5 * 1024 * 1024],
+  ['m3-touring-hero-1080.mp4', 'M3 Touring video, 1080p H.264', 7 * 1024 * 1024],
+  ['m3-touring-hero-720.webm', 'M3 Touring video, 720p AV1', 2.5 * 1024 * 1024],
+  ['m3-touring-hero-720.mp4', 'M3 Touring video, 720p H.264', 3 * 1024 * 1024],
 ]
 const POSTER_BUDGET = 140 * 1024
 
@@ -70,10 +74,15 @@ async function checkVideo() {
     const { size } = await stat(join(OUT, 'video', file))
     report(size <= budget, label, size, budget)
   }
-  // The poster is the one piece every visitor pays for regardless of whether
-  // autoplay is permitted, so it is budgeted separately and tightly.
-  const { size } = await stat(join(OUT, 'video', 'm4-gt3-hero.jpg'))
-  report(size <= POSTER_BUDGET, 'hero poster (JPEG fallback)', size, POSTER_BUDGET)
+  // Posters are the one piece every visitor pays for regardless of whether
+  // autoplay is permitted, so they are budgeted separately and tightly.
+  for (const [prefix, label] of [
+    ['m4-gt3-hero', 'M4 GT3 poster (JPEG fallback)'],
+    ['m3-touring-hero', 'M3 Touring poster (JPEG fallback)'],
+  ]) {
+    const { size } = await stat(join(OUT, 'video', `${prefix}.jpg`))
+    report(size <= POSTER_BUDGET, label, size, POSTER_BUDGET)
+  }
 }
 
 

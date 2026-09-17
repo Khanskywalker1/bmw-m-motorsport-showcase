@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { withBasePath } from '@/lib/base-path'
 import { useReducedMotion } from '@/lib/motion/use-reduced-motion'
+import { FILMS } from '@/content/hero-films'
 
 /**
  * Video hero: real BMW PressClub footage that plays on arrival, with detail
@@ -23,35 +24,15 @@ import { useReducedMotion } from '@/lib/motion/use-reduced-motion'
  * for reduced motion and for anyone whose browser refuses autoplay.
  */
 
-/**
- * Scroll-progress windows for the detail beats, as fractions of the section.
- *
- * ACCURACY: this footage is the 2021 M4 GT3 development car in camouflage —
- * the generation BEFORE the EVO this page is about. The copy says so rather
- * than letting a reader assume otherwise. Claims here are checkable: the 2021
- * date is on the clip's own slate, and the ~80 wins are the EVO's 2025 debut
- * season, already carried as verified data in content/cars/m4-gt3-evo.ts.
- * The circuit is deliberately unnamed — the footage does not identify it.
- */
-const BEATS: { at: [number, number]; kicker: string; line: string }[] = [
-  {
-    at: [0.04, 0.34],
-    kicker: 'Development testing · 2021',
-    line: 'It started as a prototype in camouflage.',
-  },
-  {
-    at: [0.36, 0.66],
-    kicker: 'The platform',
-    line: 'Proving the car that would become the most widely raced GT3 BMW M builds.',
-  },
-  {
-    at: [0.68, 0.98],
-    kicker: 'BMW M4 GT3 EVO · 2025',
-    line: 'The EVO followed — and won around eighty times in its debut season.',
-  },
-]
 
-export function CarHeroVideo({ children }: { children: React.ReactNode }) {
+export function CarHeroVideo({
+  slug,
+  children,
+}: {
+  slug: string
+  children: React.ReactNode
+}) {
+  const film = FILMS[slug]
   const reduced = useReducedMotion()
   const wrap = useRef<HTMLDivElement>(null)
   const video = useRef<HTMLVideoElement>(null)
@@ -62,7 +43,8 @@ export function CarHeroVideo({ children }: { children: React.ReactNode }) {
   const [playing, setPlaying] = useState(false)
 
   useEffect(() => {
-    if (reduced) return
+    if (reduced || !film) return
+    const beats = film.beats
     const section = wrap.current
     const el = video.current
     if (!section || !el) return
@@ -97,10 +79,10 @@ export function CarHeroVideo({ children }: { children: React.ReactNode }) {
       const r = section.getBoundingClientRect()
       const travel = r.height - window.innerHeight
       const p = travel > 0 ? Math.min(Math.max(-r.top / travel, 0), 1) : 0
-      for (let i = 0; i < BEATS.length; i++) {
+      for (let i = 0; i < beats.length; i++) {
         const node = beatRefs.current[i]
         if (!node) continue
-        const [s, e] = BEATS[i]!.at
+        const [s, e] = beats[i]!.at
         const mid = (s + e) / 2
         const half = (e - s) / 2
         const o = Math.max(0, 1 - Math.abs(p - mid) / half)
@@ -116,10 +98,12 @@ export function CarHeroVideo({ children }: { children: React.ReactNode }) {
       cancelAnimationFrame(raf)
       io.disconnect()
     }
-  }, [reduced])
+  }, [reduced, film])
 
   // Reduced motion: the photographic hero at its natural height. No video.
-  if (reduced) return <>{children}</>
+  // An unrecognised slug degrades the same way rather than rendering a
+  // <video> with no sources, which would show as a dead black rectangle.
+  if (reduced || !film) return <>{children}</>
 
   return (
     <section ref={wrap} className="relative h-[260svh]">
@@ -137,7 +121,7 @@ export function CarHeroVideo({ children }: { children: React.ReactNode }) {
           loop
           playsInline
           preload="metadata"
-          poster={withBasePath('/video/m4-gt3-hero.jpg')}
+          poster={withBasePath(`/video/${film.prefix}.jpg`)}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
             playing ? 'opacity-100' : 'pointer-events-none opacity-0'
           }`}
@@ -151,18 +135,21 @@ export function CarHeroVideo({ children }: { children: React.ReactNode }) {
               re-checked on resize. Fine for a hero; worth knowing. */}
           <source
             media="(min-width: 821px)"
-            src={withBasePath('/video/m4-gt3-hero-1080.webm')}
+            src={withBasePath(`/video/${film.prefix}-1080.webm`)}
             type="video/webm; codecs=av01.0.05M.08"
           />
           <source
             media="(min-width: 821px)"
-            src={withBasePath('/video/m4-gt3-hero-1080.mp4')}
+            src={withBasePath(`/video/${film.prefix}-1080.mp4`)}
             type="video/mp4"
           />
           {/* Phones get 720p: the 1080p pair is ~2x the bytes for a screen that
               cannot resolve the difference. */}
-          <source src={withBasePath('/video/m4-gt3-hero-720.webm')} type="video/webm; codecs=av01.0.05M.08" />
-          <source src={withBasePath('/video/m4-gt3-hero-720.mp4')} type="video/mp4" />
+          <source
+            src={withBasePath(`/video/${film.prefix}-720.webm`)}
+            type="video/webm; codecs=av01.0.05M.08"
+          />
+          <source src={withBasePath(`/video/${film.prefix}-720.mp4`)} type="video/mp4" />
         </video>
 
         <div aria-hidden className="pointer-events-none absolute inset-0">
@@ -172,7 +159,7 @@ export function CarHeroVideo({ children }: { children: React.ReactNode }) {
         {/* Not aria-hidden: this is real editorial copy, and it is the only
             place some of it appears. Screen readers get it in document order. */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 mx-auto max-w-7xl px-6 pb-20 sm:pb-28">
-          {BEATS.map((beat, i) => (
+          {film.beats.map((beat, i) => (
             <div
               key={beat.kicker}
               ref={(el) => {

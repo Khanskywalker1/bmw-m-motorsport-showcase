@@ -1,4 +1,17 @@
 import { test, expect } from '@playwright/test'
+import { FILM_SLUGS } from '../../content/hero-films'
+
+// Held literally rather than imported from '@/content': that barrel pulls in
+// assets.generated.json, which the test loader rejects without an import
+// attribute. FILM_SLUGS is the part that must not drift, and it is imported.
+// A slug going stale here fails loudly as a 404 on navigation.
+const ALL_CAR_SLUGS = [
+  'm-hybrid-v8',
+  'm4-gt3-evo',
+  'm4-gt4-evo',
+  'm2-racing',
+  'm3-touring-24h',
+]
 
 /*
  * The M4 GT3 page is the only route with a video hero. What must never
@@ -80,11 +93,27 @@ test.describe('M4 GT3 video hero', () => {
     await expect(video).toHaveJSProperty('playsInline', true)
   })
 
-  test('no other car page mounts a video', async ({ page }) => {
-    for (const slug of ['m-hybrid-v8', 'm4-gt4-evo', 'm2-racing', 'm3-touring-24h']) {
+  /**
+   * Driven off the registry rather than a hand-written list: when a car gains a
+   * film, this test should start requiring a video for it automatically instead
+   * of failing with a stale expectation. (It did exactly that when the M3
+   * Touring film landed.)
+   */
+  test('every car matches the film registry', async ({ page }) => {
+    for (const slug of ALL_CAR_SLUGS) {
       await page.goto(`/cars/${slug}/`)
       await page.waitForTimeout(500)
-      await expect(page.locator('video'), `${slug} should not have a video hero`).toHaveCount(0)
+      // Under reduced motion the hero renders no <video> at all, for any car —
+      // that is the whole point of the reduced-motion path, so the registry
+      // does not apply there.
+      const reduced = await page.evaluate(
+        () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      )
+      const expected = !reduced && FILM_SLUGS.includes(slug) ? 1 : 0
+      await expect(
+        page.locator('video'),
+        `${slug} should have ${expected} video hero(es)`
+      ).toHaveCount(expected)
     }
   })
 })

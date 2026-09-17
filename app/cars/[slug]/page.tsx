@@ -5,13 +5,18 @@ import { CARS, CARS_BY_SLUG } from '@/content'
 import { LiveryTheme } from '@/lib/motion'
 import { CarHero } from '@/components/sections/car-hero'
 import { CarHeroVideo } from '@/components/sections/car-hero-video'
+import { FILM_SLUGS } from '@/content/hero-films'
 import { CarNarrative } from '@/components/sections/car-narrative'
 import { CarSpecs } from '@/components/sections/car-specs'
 import { CarMeta } from '@/components/sections/car-meta'
 import { CarGallery } from '@/components/sections/car-gallery'
 
-/** The one car with a film hero; every other car stays photographic. */
-const FILM_SLUG = 'm4-gt3-evo'
+/**
+ * Cars with a film hero. Driven by the registry in car-hero-video.tsx so this
+ * list cannot drift from the films that actually have encoded files; every
+ * other car stays photographic.
+ */
+const HAS_FILM = new Set(FILM_SLUGS)
 
 export function generateStaticParams() {
   return CARS.map((car) => ({ slug: car.slug }))
@@ -42,10 +47,10 @@ export default async function CarPage({
 
   return (
     <LiveryTheme livery={car.livery}>
-      {car.slug === FILM_SLUG ? (
-        // Only this car has a frame sequence. The photographic hero is passed
-        // through as the fallback for reduced motion, no JS, and pre-load.
-        <CarHeroVideo>
+      {HAS_FILM.has(car.slug) ? (
+        // The photographic hero is passed through as the fallback for reduced
+        // motion, refused autoplay, and the window before the video is ready.
+        <CarHeroVideo slug={car.slug}>
           <CarHero car={car} />
         </CarHeroVideo>
       ) : (
